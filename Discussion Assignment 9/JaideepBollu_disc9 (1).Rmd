@@ -1,0 +1,75 @@
+---
+title: "Discussion 9"
+author: "Jaideep Bollu"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+
+For the first two questions, use `dplyr` and `ggplot2`. These packages can be loaded simultaneously by loading the `tidyverse` package. 
+
+1) (2 pts)  Use the `starwars` data set in the `dplyr` package. Create a tibble where each row corresponds to a `homeworld`.  Have there be a column that contains the number of characters/observations that come from that `homeworld`, and another column that contains the number of unique species that comes from that `homeworld`.
+
+```{r}
+library(dbplyr)
+
+tibble_starwars <- starwars %>%
+  group_by(homeworld) %>%
+  summarize(homeworld_characters = n(), homeworld_species = length(unique(species)))
+tibble_starwars
+```
+
+2) (2 pts) Create a scatter plot for `height` and `mass`.  Have the points change by an aesthetic tribute (i.e. size, color, shape, etc) based on a variable you create. 
+
+```{r}
+starwars <- starwars %>%
+  mutate(species_type = ifelse(species == "Human", "Human", ifelse(species == "Droid", "Droid", "Other"))) %>%
+  filter(!is.na(height) & !is.na(mass))
+starwars
+         
+         
+ggplot(starwars) + geom_point(mapping = aes(y = mass, x = height, color = species_type)) + labs(title = "Height vs. Mass", subtitle = "For Starwars Characters", x = "Height", y = "Mass")
+```
+
+Note:  The variable you create can be your own creation, or you can pick from one of the examples below.  You do not need to use `tidyverse`/`dplyr` to create the new variable (although that is encouraged), you can use any techniques from the course. 
+
+- TRUE/FALSE: is this character in "A New Hope"
+- Is this character a human, Droid, or other. 
+- TRUE/FALSE: Does this character know Padme?
+- Has this character ridden in the 	Millennium Falcon?
+
+Download the "beautifulThings.txt" file from Canvas (under Datasets). This file contains the lyrics to Benson Boone's song "Beautiful Things". Each line in the text file is a line from the song, in order. 
+
+3) (2 pts) Create a frequency table of word counts from Beautiful Things. Do not count words that end with commas or question marks as different. For example, "gone" and "gone?" should both be counted as "gone". Organize it from most frequent to least frequent.  Display the top 10 most common words.
+
+```{r}
+library(wordcloud)
+boone = "~/Downloads/beautifulThings.txt"
+all <- readLines(boone, warn = FALSE)
+all <- paste(all, collapse = " ")
+all <- tolower(all)
+all <- gsub("[[:punct:]]", "", all)
+all <- gsub("[[:space:]]", " ", all)
+
+BeautifulThings <- strsplit(all, " ")
+
+wc <- table(BeautifulThings)
+wc <- sort(wc, decreasing = T)
+head(wc, 10)
+```
+
+4) (1.5 pts) Look up the help file for the `wordcloud` function. Create a word cloud for the data in the previous question that colors the words into two different colors.
+
+```{r}
+help("wordcloud")
+wordcloud(words = names(wc), freq = wc, colors = c("darkgrey", "gold"))
+```
+
+
+
+
+
+
