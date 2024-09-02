@@ -1,0 +1,77 @@
+---
+title: "Discussion 4"
+author: "Jaideep Bollu"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Use the built-in *ChickWeight* data set in R to answer the questions in this discussion assignment. 
+
+1) Load the *ChickWeight* data set into your R environment. Open up the help file for this data set. .  Describe what the "Description" in the help file says. (1 pt)
+
+```{r}
+data("ChickWeight")
+help(ChickWeight)
+
+```
+
+The description says that the ChickWeight data frame has 578 rows and 4 columns from an experiment on the effect of diet on early growth of chicks.
+
+2) Determine the arithmetic mean of weights at `Time = 0`. (1 pt)
+
+```{r}
+Weight_time0 <- subset(ChickWeight, Time == 0)
+mean(Weight_time0$weight)
+```
+
+3) Create a data frame named `chick1` that contains all data from Chick 1 from  *ChickWeight*. Do the same for Chick 2 and Chick 3, naming them `chick2` and `chick3` respectively. (1.5 pts)
+
+```{r}
+chick1 <- subset(ChickWeight, Chick == 1)
+chick2 <- subset(ChickWeight, Chick == 2)
+chick3 <- subset(ChickWeight, Chick == 3)
+chick1
+chick2
+chick3
+```
+
+4) Use the `plot` and `lines` commands to create a line plot showing the trajectory of weights (x) across time (y) of the three chicks subsetted from Q3. Make sure to add a title, axis labels, and colors for your line plot. (1.5 pts)
+
+```{r}
+plot(chick1$weight, chick1$Time, type = "l", col = "brown", xlab = "Time", ylab = "Weight", main = "Trajectory of weights across time for Chicks 1, 2, and 3", cex.main = 0.7, cex.lab = 0.7 )
+lines(chick2$weight, chick2$Time, col = "orange")
+lines(chick3$weight, chick3$Time, col = "red")
+```
+
+5) Create a function named `tempConversion` that has two arguments `tempType` and `temp`, which does the following:
+
+- Returns the temperature in Celsius if `tempType` is "F".
+- Returns the temperature in Fahrenheit if `tempType` is "C".
+
+Make sure to use an if statement in your function. (1.5 pts) 
+
+```{r}
+tempConversion <- function(tempType, temp) {
+  if (tempType == "F") {
+    temp <- (5 / 9 * (temp - 32))
+  }
+  
+  else if (tempType == "C") {
+    temp <- ((temp * 9 / 5) + 32)
+  }
+  
+  return(temp)
+}
+```
+
+6) Use the function you created in Q3 to convert these temperatures to Fahrenheit: 0, 32, 22.2, 37. Output the results. (1 pt)
+
+```{r}
+tempConversion("C", 0)
+tempConversion("C", 32)
+tempConversion("C", 22.2)
+tempConversion("C", 37)
+```
