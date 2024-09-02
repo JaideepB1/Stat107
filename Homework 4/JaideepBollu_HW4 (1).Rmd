@@ -1,0 +1,277 @@
+---
+title: "Homework #4 (40 pts)"
+author: "Jaideep"
+output:
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Instructions
+- If you wish to use any additional packages beyond "Base R" (the default) then email Jericho (`jlaws011@ucr.edu`) for permission. 
+- Use R to answer the questions below. 
+- Check Canvas regularly for clarification on questions. 
+
+## Questions 
+
+For some questions, you will need the `housing.csv` data set on Canvas. This data set comes from [Kaggle.com](https://www.kaggle.com/yasserh/housing-prices-dataset) and contains general information about housing costs. You will also need to use `dplyr` and `ggplot2` to answer the questions below.  These packages are part of the `Tidyverse` suite. 
+
+**Q1: Casinos and Catan**
+
+(a) Create a function named `slot_machine` which has one argument `times`. Given some amount of `times` that you play the slot machine, the function will sample some outcome from a slot machine with the following characteristics:
+
+- Has five different possibilities: 4, 1, 0, -1, -10
+- Has respective probabilities: 0.2, 0.3, 0.2, 0.2, 0.1
+
+Have the function return a vector of length `times`, where each element corresponds to the amount of money cumulatively gained by that current index. For example, if you use the slot machine three times and get 4, -10, and -1 from those three attempts, your function should return the vector `4, -6, -7`. 
+
+```{r}
+slot_machine <- function(times) {
+  xe <- c()
+  ans <- 0
+  for (x in 1:times) {
+    result <- sample(c(4, 1, 0, -1, -10), 1, prob = c(0.2, 0.3, 0.2, 0.2, 0.1))
+    ans <- ans + result
+    xe <- append(xe, ans)
+  }
+  
+  return(xe)
+}
+
+```
+
+(b) Run the `slot_machine` function with `times = 10000` and save the results. Use the `plot()` command on those results to show how the amount of money you have changes over time. Make sure this plot has an informative title, `type = "l"`, and appropriate axis labels. What does the plot tell you about the slot machine?
+
+```{r}
+result <- slot_machine(10000)
+plot(result, main = "10000 Cumulative Slot Machine Draws Results", type = "l", xlab = "Number of Slot Machine Draws", ylab = "Cumulative Money Gained", cex.main = 0.85, cex.lab = 0.7)
+```
+
+The plot tells us that the general trend from playing the slot machine is a downwards trend meaning that adhering to the probabilities of getting certain results, there is a high chance that you will continue to lose money by playing.We can also see that the plot continues to have small upwards and downwards trends representing winning money and losing money continuously with losing money having a more significant impact on the money gained overall.
+
+This information is for part (c) and beyond. Suppose Jericho was annoyed with how games of the board game Catan are going. In Catan, players gain resources from settlements depending on the dice roll, where a player rolls two dice. We have the following distribution of the sum of two dice $X$ on a given roll:
+
+| $x$         | 2            | 3            | 4            | 5            | 6            | 7            | 8            | 9            | 10           | 11           | 12           |
+|:-----------:|:------------:|:------------:|:------------:|:------------:|:------------:|:------------:|:------------:|:------------:|:------------:|:------------:|:------------:|
+| $P(X = x)$  | $\frac{1}{36}$ | $\frac{2}{36}$ | $\frac{3}{36}$ | $\frac{4}{36}$ | $\frac{5}{36}$ | $\frac{6}{36}$ | $\frac{5}{36}$ | $\frac{4}{36}$ | $\frac{3}{36}$ | $\frac{2}{36}$ | $\frac{1}{36}$ |
+
+In the next game, suppose Jericho has the following outcomes whenever two dice are rolled:
+
+- Wood on dice rolls of 6, 10
+- Brick on dice rolls of 4
+- Sheep on dice rolls of 3
+- Wheat on dice rolls of 9
+- Ore on dice rolls of 4
+
+Using the information above, answer the following questions below.
+
+(c) Find the probability of Jericho gaining wood on any given turn. Then, build a `sample()` function using the calculated probability that returns 0 if no wood is received, and 1 if wood is received. Keep the `size` argument equal to 1.
+
+The probability of Jericho gaining wood on any given turn would be 5/36 + 3/36 or 8/36 or 2/9 because Wood is given on dice rolls of 6 and 10 which respectively have a 5/36 and 3/36 probability of being rolled in a turn.
+
+```{r}
+probWood <- function() {
+  sample(c(0, 1), 1, prob = c(7/9, 2/9))
+}
+probWood()
+```
+
+(d) Create a function named `game` that takes in the number of turns `size` and returns the proportion of times Jericho receives wood. Try this function out with `size = 50` and use a seed of 10. Hint: You will need to use the `mean()` function here.
+
+```{r}
+game <- function(size) {
+  ans <- replicate(size, probWood())
+  return(mean(ans))
+}
+
+set.seed(10)
+game(50)
+
+```
+
+(e) Run the `game` function 1,000 times with a `size` of 25 using a one-line command. Repeat this again with a `size` of 500. Name these runs `games1` and `games2` respectively.
+
+```{r}
+games1 <- replicate(1000, game(25))
+games2 <- replicate(500, game(25))
+```
+
+(f) Create two plots of the probability of gaining wood throughout the 1000 games, which each plot representing games with 50 and 500 turns. Describe the variability of the probability across the two plots.
+
+```{r}
+result1 <- replicate(1000, game(50))
+result2 <- replicate(1000, game(500))
+
+hist(result1, main = "Probability of Gaining Wood in 50-turn Games", xlab = "Probability of Gaining Wood", ylab = "Frequency")
+
+hist(result2, main = "Probability of Gaining Wood in 500-turn Games", xlab = "Probability of Gaining Wood", ylab = "Frequency")
+```
+
+We can see that the variability of the probability of gaining wood in the 500 turn histogram is far more normally distributed than in the 50 turn histogram which we can attribute to the larger amount of turns.
+
+**Q2: Housing Data Set using dplyr and tidyverse**
+
+(a) Create a new column called `price100` that contains the same values in the `price` column divided by 100000. That is, it is price in 100,000 units. In addition, change the `bedrooms` column to be an *ordered factor* type (from smallest to largest). Use this version of the data set for the rest of the assignment. 
+
+```{r}
+library(dplyr)
+library(tidyverse)
+```
+
+```{r}
+housing <- read.csv("Housing.csv")
+housing2 <- housing %>%
+  mutate(price100 = price / 100000) %>%
+  mutate(bedrooms = factor(bedrooms, ordered = TRUE))
+housing2
+```
+
+(b) Create a tibble where each row corresponds to a different combination of values for `bedrooms` and `bathrooms`. Have this tibble contain the following columns for each combination. 
+
+- Median `price100` 
+- Arithmetic mean `area` 
+- Total number of observations in each subgroup
+- Number of observations that do not have `hotwaterheating` and `airconditioning`. 
+
+```{r}
+tibble_housing2 <- housing2 %>%
+  group_by(bedrooms, bathrooms) %>%
+  summarize(median_price = median(price100), mean_area = mean(area), observations = n(), observations2 = sum((hotwaterheating == "no") & (airconditioning == "no")))
+tibble_housing2
+```
+
+(c) Create a tibble that only contains all observations that have either a `guestroom` or a `basement` (or both).  Have this tibble only contain the columns `area`, `prefarea`, `parking` and `furnishingstatus`. Arrange this tibble from `prefarea` ("yes", then "no" values), and then by `parking` (smallest to biggest).
+
+```{r}
+tibble2_housing2 <- housing2 %>%
+  filter(guestroom == "yes" | basement == "yes") %>%
+  select(area, prefarea, parking, furnishingstatus) %>%
+  arrange(desc(prefarea), parking)
+tibble2_housing2
+```
+
+(d) Create a tibble where each row corresponds to a different combination of values for `bedrooms` and `bathrooms`. Have this tibble contain the following columns for each combination. 
+  
+- Maximum price for the particular combination. 
+- (arithmetic) mean price for the particular combination
+- Proportion of observations in a preferred area for that combination
+- Total number of values for that combination.
+
+Organize this tibble from most number of houses (first row) to least houses (last row) for that combination. 
+
+```{r}
+tibble3_housing2 <- housing2 %>%
+  group_by(bedrooms, bathrooms) %>%
+  summarize(max_price = max(price), mean_price = mean(price), observations_preferredArea = mean(if_else(prefarea == "yes", 1, 0)), observations = n())
+tibble3_housing2
+```
+
+**Q3: Housing Data using ggplot2**
+
+For this section, create all of your plots with `ggplot2`.
+
+(a) Create a boxplot for the `price` variable across the different numbers of `bathrooms`. Change the color palette for your graph. Make sure this plot is informative and clear as possible.
+
+```{r}
+ggplot(housing2) + geom_boxplot(mapping = aes(y = price, x = factor(bathrooms), color = bathrooms)) + labs(title = "Bathroom vs. Price", subtitle = "Price of House in Relation to Bathroom Count", x = "Bathroom Count", y = "House Price")
+```
+
+(b) Create a scatter plot for `area` and `price100` for the Housing data set.  Differentiate the points by `prefarea` and `mainroad`. Make sure this plot is informative and clear as possible.
+
+```{r}
+ggplot(housing2) + geom_point(mapping = aes(y = price100, x = area, color = prefarea, shape = mainroad)) + labs(title = "Area vs. Price", subtitle = "Price of House in Relation to Area", x = "Area", y = "House Price ($100,000)")
+```
+
+(c) Use `geom_density()` to compare the distribution of `price100` for different `furnishingstatus`. Change the colors on this plot to be something other than the default. Make sure this plot is informative and clear as possible.
+
+```{r}
+ggplot(housing2) + geom_density(mapping = aes(x = price100, fill = furnishingstatus), alpha = 0.6) + labs(title = "Furnishing Status vs. Price", subtitle = "Price of House in Relation to Furnishing Status", x = "House Price", y = "Density")
+```
+
+(d) Create a plot of your choice!  You can use any data set from the course, or a data set from a package. You must use `ggplot2` to create your graph, and your graph should use a `geom` that has not been used elsewhere on this assignment. Make sure this plot is informative and clear as possible.
+
+```{r}
+ggplot(housing2) + geom_bar(mapping = aes(x = parking, fill = bedrooms)) + labs(title = "", subtitle = "House Count Based on Parking Space", x = "Parking Capacity", y = "Count")
+```
+
+(e) Describe in detail the plot you created for (d). 
+
+The plot I created for (d) is a stacked bar chart that is used to show a count of the number of houses with different parking space capacities and is divided by the number of bedroom(s) these houses have. In the plot above, we can see that a majority of the houses in the dataset have parking capacities of zero cars with a noticeable drop in the count of houses with parking capapcities of 1 and 2 car(s) and a small proportion of houses with parking capacities of 3 cars. Houses with 3 bedrooms also occupy a majority of all of the houses regardless of parking capapcity. The number of houses with no parking capactity in the dataset is also shown to be aproximately 300 houses. The number of bedrooms shown in the plot is also within 0 to 6 bedrooms with an almost negligible amount of houses among those within the dataset having 6 bedrooms.
+
+**Q4: Simulation Recreation with M\&Ms**
+
+Suppose we were curious about the proportion of colors that come from a snack-size package of M\&Ms. We think there should be an equal number of red, orange, yellow, green, blue, and brown candies within a single package. Suppose the true proportion of red, orange, yellow, green, blue, and brown candies are the following:
+
+```{r}
+probs = c(0.1, 0.2, 0.1, 0.15, 0.2, 0.25)
+probs
+```
+
+We will look at how orange candies are distributed in M\&Ms packages. Would there be enough evidence to suggest that our hypothesis is true? Answer the following questions:
+
+(a) Write a function named `oranges` with two inputs: 
+
+- ProbabilityOfOrange: a numeric vector of length 1 which contains the probability of getting an orange candy
+- NumberCandies: a numeric vector of length 1 that is a whole number. This represents how many candies come out of the machine. 
+
+Have this function return a numeric vector of length 1 that contains the number of orange candies generated.
+
+```{r}
+oranges <- function(ProbabilityOfOrange, NumberCandies) {
+  return(rbinom(1, size = NumberCandies, prob = ProbabilityOfOrange))
+}
+```
+
+(b) Call your function in part (a) 1000 times using `ProbabilityOfOrange = .167` and `NumberCandies = 30`.  Store the results in a vector called `OrangeTotals`, and display a frequency table of these values. Please set a seed.
+
+```{r}
+set.seed(10)
+OrangeTotals <- replicate(1000, oranges(0.167, 30))
+table(OrangeTotals)
+```
+
+(c) Repeat problem (b), but use `ProbabilityOfOrange = .2` and `NumberCandies = 30`. Store the results in a vector called `OrangeTotalsNull`, and display a frequency table of these values.
+
+```{r}
+set.seed(10)
+OrangeTotalsNull <- replicate(1000, oranges(0.2, 30))
+table(OrangeTotalsNull)
+```
+
+(d) Write a function that generates a bar plot of the frequency of the number (or proportion) of orange candies using `ggplot2`. This function should have three elements: 
+
+- DataResults: a numeric vector where each element corresponds to the number of orange candies generated in a sequence of trials. 
+- NumberCandies: a numeric vector of length 1.  Contains the total number of candy generated for each trial. 
+- Statistic: a character vector of length 1, either "number" or "proportion"
+    +  If equal to "number" (default) then a bar plot for the number of oranges is plotted (printed, not returned).  In addition, a *named* numeric vector of length 2 is returned that contains the (arithmetic) mean and standard deviation for the **number** of orange candies for each trial. 
+    +  If equal to "proportion", then a bar plot for the proportion of oranges is plotted (printed, not returned). In addition, a *named* numeric vector of length 2 is returned that contains the (arithmetic) mean and standard deviation for the **proportion** of orange candies for each trial. 
+    
+```{r}
+orange_barPlot <- function(DataResults, NumberCandies, Statistic = "number") {
+  tibble_orange <- tibble(numberOrange = DataResults, proportionOrange = DataResults/NumberCandies)
+  if (Statistic == "number") {
+    c <- ggplot(tibble_orange) + geom_bar(mapping = aes(x = numberOrange)) + labs(title = "Frequency of the Orange Candies Count", x = "Orange Number", y = "Frequency")
+    numerics <- c(mean(tibble_orange$numberOrange), sd(tibble_orange$numberOrange))
+    print(c)
+  }
+  
+  else if (Statistic == "proportion") {
+    c <- ggplot(tibble_orange) + geom_bar(mapping = aes(x = proportionOrange)) + labs(title = "Frequncy of the Orange Candies Proportion", x = "Orange Proportion", y = "Frequency")
+    numerics <- c(mean(tibble_orange$proportionOrange), sd(tibble_orange$proportionOrange))
+    print(c)
+  }
+  
+  return(numerics)
+}
+```
+
+(e) Run the function made in (d) on the `OrangeTotals` and `OrangeTotalsNull` vectors individually, showing the proportion of orange candies for each trial. From visual and numerical results, does it appear that there is a contrast between our beliefs and the truth regarding orange candies? What evidence do we have?
+
+```{r}
+orange_barPlot(OrangeTotals, 30, "proportion")
+orange_barPlot(OrangeTotalsNull, 30, "proportion")
+```
+
+It appears that there is not a contrast between beliefs of an equal distribution of M&M candy colors and the reality as the above visualizations and numbers demonstrate that the majority of the proportion of orange cadies are aproximately 1/6.
