@@ -1,0 +1,262 @@
+---
+title: "Homework #3 (40 pts)"
+author: "Jaideep B"
+output:
+  html_document: default
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Instructions
+- If you wish to use any additional packages beyond "Base R" (the default) then email Jericho (`jlaws011@ucr.edu`) for permission. 
+- Use R to answer the questions below. 
+- Check Canvas regularly for clarification on questions. 
+
+## Questions
+
+**Q1: Plotting with Data (Iris)**
+
+(a) Create a histogram of sepal lengths from the `iris` data set. Make sure your histogram has an informative title, axis names, and a non-defaulted color. 
+
+```{r}
+data(iris)
+hist(iris$Sepal.Length, main = "Histogram of Sepal Lengths", xlab = "Sepal Length (cm)", ylab = "frequency", col = "red")
+```
+
+(b) Create a scatter plot, with sepal length on the x-axis and sepal width on the y-axis. Have the points colored based on the `Species` type. Add a legend, informative title, and axis labels to your scatter plot.
+
+```{r}
+plot(iris$Sepal.Length, iris$Sepal.Width, main = "Scatter Plot for Sepal Width vs Length", xlab = "Sepal Length (cm)", ylab = "Sepal Width (cm)", col = iris$Species)
+
+legend("topright", legend = c("setosa", "versicolor", "virginica"), col = c("black", "green", "red"), cex = 0.5, pch = 1)
+```
+
+(c) Create a box plot of petal lengths, grouped by the species of the flower. Make sure your box plot has an informative title, axis names, and a non-defaulted color.
+
+```{r}
+boxplot(iris$Petal.Length ~ iris$Species, main = "Box Plot of Petal Length based on Species", xlab = "Species", ylab = "Petal Length", col = "lightyellow")
+```
+
+**Q2: Base R Graphics**
+
+For this homework problem, we will be using the `22_23_nba_pergame.csv` file on Canvas. Make sure to load this file into your environment and name the dataset `nba`.
+
+(a) Write 5-7 sentences about some of the characteristics, summaries, and patterns you see in the `nba` data set. Some things you can talk about include the dimensions of the data set, how certain variables are distributed, and information that is included in the data set. Use code to back up and accompany the statements you make.
+
+```{r}
+nba <- read.csv("22_23_nba_pergame.csv")
+nba
+colnames(nba)
+length(colnames(nba))
+hist(nba$Age, main = "Histogram of NBA Ages", xlab = "Player Age", ylab = "frequency", col = "lightgreen")
+plot(nba$Age, nba$Rank, main = "Scatter Plot for Players Age vs Rank", xlab = "rank", ylab = "age", col = "blue")
+```
+
+The nba dataset gives information on a variety of characters in the nba and is seemingly ordered descendingly by player rank. It has a variety of variables in relation to the nba players information with some of them including the players position, age, team affiliation, etc. The dataset has information on a total of 539 players with 31 different variables based on information on the player. The majority of the variables in relation to the players performance metrics seems to be of the double datatype. From the histogram on players ages, we can see that the age catagory that the majority of players fall into would be somewhere in between 20 and 25 with the frequency of nba players being active at higher ages getting progressively lower.
+
+(b) Create a new data set that is a subset of the `nba` data set, which only contains the following positions: `PG, SG, SF, PF, C`. Thereafter, convert the `Pos` column into a column of factors and remove any rows that contain NAs. Call this new data set `nba_five`.
+
+```{r}
+nba_five <- subset(nba, pos = "PG" & "SG" & "SF" & "PF" & "C")
+nba_five$Pos <- factor(nba_five$Pos)
+nba_five <- na.omit(nba_five)
+nba_five
+```
+
+(c) Using base R and the data set `nba_five`, create side-by-side boxplots of the `MP` variable broken up by `Pos` (the different positions). Make sure you have an informative title, appropriate axis labels, and colors. Use the argument `col` so that *each boxplot is a different color* of your choice. 
+
+```{r}
+boxplot(nba_five$MP ~ nba_five$Pos, main = "Box Plot of Minutes Played based on Player Position", xlab = "Position", ylab = "Minutes", col = c("brown", "lightgrey", "red", "purple", "green"))
+```
+
+(d) Using base R and the data set `nba_five`, create a scatter plot of the `AST` (assists) and `TOV` (turnovers) variables, with `AST` represented on the x-axis. Make sure you have an informative title, appropriate axis labels, a `cex = 0.4`, and a black color. From there, include the following elements in your plot, with different aesthetics for each of these elements:
+
+- A point representing the means of both variables
+- A point representing the medians of both variables
+- A line indicating the top 10$\%$ in the `AST` variable (hint: use quantile function)
+- A line indicating the top 10$\%$ in the `TOV` variable (hint: use quantile function)
+
+Include a legend for all elements in your plot, as well as the position types.
+
+```{r}
+plot(nba_five$AST, nba_five$TOV, main = "Scatter Plot for Assists vs Turnovers", xlab = "Assists", ylab = "Turnovers", cex = 0.4, col = "black")
+points(mean(nba_five$AST), col = "blue", pch = 2)
+points(mean(nba_five$TOV), col = "red", pch = 19)
+points(median(nba_five$AST), col = "green", pch = 16)
+points(median(nba_five$TOV), col = "gold", pch = 17)
+abline(v = quantile(nba_five$AST, 0.9), col = "darkgreen", lty = 2)
+abline(v = quantile(nba_five$TOV, 0.9), col = "darkred", lwd = 3)
+legend("topright", legend = c("mean(AST)", "mean(TOV)", "median(AST)", "median(TOV)", "quantile(AST)", "quantile(TOV)"), col = c("blue", "red", "green", "gold", "darkgreen", "darkred"), cex = 0.5, pch = c(2, 19, 16, 17, NA, NA), lty = c(NA, NA, NA, NA, 2, NA), lwd = c(NA, NA, NA, NA, NA, 3))
+```
+
+(e) Create a histogram of your choice. Make sure you have an informative title and appropriate axis labels. Add vertical lines representing the mean and median of your variable. Include a legend for your plot to label your mean and median.
+
+```{r}
+hist(nba_five$STL, main = "Steal Frequency of Five NBA Positions", xlab = "Steal Frequency", ylab = "Count", col = "gold")
+abline(v = mean(nba_five$STL), col = "darkgreen", lwd = 3)
+abline(v = median(nba_five$STL), col = "purple", lwd = 3)
+legend("topright", legend = c("mean(STL)", "mean(STL)"), col = c("darkgreen", "purple"), cex = 0.5, lwd = c(3, 3))
+```
+
+(f) Describe what you plotted above in the previous problem. (i.e. what does the graph describe, the shape/size of the distribution, why do some of the points differ, etc.)
+
+The histogram that I plotted above gives the frequencies at which different Steal Frequencies are in the nba. The plot shows that the most common Steal Frequency is between around 0.3 and 0.4 with the Steal Frequency becoming progressively less common both bellow this number and above this number thus being interpreted as less players have Steal Frequency lower than this number or higher than this number. The Steal Frequency stops at approximately 1.75 at the highest.The mean and median is also plotted in the histogram above which shows us what the mean Steal Frequency is and the median Steal Frequency in the nba is.
+
+**Q3: Apply Functions**
+
+We will continue to use the `nba_five` data set from the previous problem. If you were having trouble creating the `nba_five` data set, using the `nba` data set here is fine. 
+
+(a) Using `sapply()`, determine the class of the first 10 columns in `nba_five`.
+
+```{r}
+column10 <- sapply(nba_five[, 1:10], class)
+column10
+```
+
+(b) Create a function named `my_five` that returns a vector of five players, each of which are randomly sampled from the following categories:
+
+- Above the 80th percentile in a particular variable
+- Between the 60th and 80th percentile in a particular variable
+- Between the 40th and 60th percentile in a particular variable
+- Between the 20th and 40th percentile in a particular variable
+- Below the 20th percentile in a particular variable
+
+The function should take in two inputs: a vector representing a numerical variable from the `nba_five` data set and a vector representing the column of player names. It should return a vector of five players. (Hint: Start by using the `quantile()` function.)
+
+```{r}
+my_five <- function(nbaVector, playerNamesVector) {
+  player5 <- character(5)
+  
+  quantile1 <- subset(nba_five, nbaVector > quantile(nbaVector, 0) & nbaVector < quantile(nbaVector, 0.2))
+  player5[1] <- sample(quantile1$Player, 1)
+  
+  quantile2 <- subset(nba_five, nbaVector > quantile(nbaVector, 0.2) & nbaVector < quantile(nbaVector, 0.4))
+  player5[2] <- sample(quantile1$Player, 1)
+  
+  quantile1 <- subset(nba_five, nbaVector > quantile(nbaVector, 0.4) & nbaVector < quantile(nbaVector, 0.6))
+  player5[3] <- sample(quantile1$Player, 1)
+  
+  quantile1 <- subset(nba_five, nbaVector > quantile(nbaVector, 0.6) & nbaVector < quantile(nbaVector, 0.8))
+  player5[4] <- sample(quantile1$Player, 1)
+  
+  quantile1 <- subset(nba_five, nbaVector > quantile(nbaVector, 0.8) & nbaVector < quantile(nbaVector, 1))
+  player5[5] <- sample(quantile1$Player, 1)
+  
+  return(player5)
+}
+
+ans <- my_five(nba_five$AST, nba_five$Player)
+ans
+
+```
+
+(c) Using `apply()` on the `my_five` function, generate five players for the following columns: `FG., eFG., FT., TRB, AST, PTS`.
+
+```{r}
+
+
+```
+
+(d) Subset the `nba_five` data set such that you only have players from a team of your choice. Name it however you would like.
+
+```{r}
+nba_five_TOT <- subset(nba_five, Tm == "TOT")
+nba_five_TOT
+```
+
+(e) Create a function named `top_player` that finds the player with the highest value of some variable and returns a named list of two elements: the player name and the respective value of that variable. The function should take in two inputs: a vector representing a numerical variable from the `nba_five` data set and a vector representing the column of player names.
+
+```{r}
+top_player <- function(numVector, colVector) {
+  max_val <- max(numVector)
+  ans <- list(Player = colVector[max_val], Value = max_Val)
+}
+
+```
+
+(f) Use `lapply()` on the `top_player` function to get the best players from the team you chose in part (d) for the following variables: `AST, STL, BLK, TOV, PF, PTS`.
+
+```{r}
+
+```
+
+**Q4: Loops and Regression**
+
+(a) Create a function named `fib` which has one argument `n`. Have this function generate the first $n$ Fibonacci numbers using a **for** loop.  Note that the Fibonacci sequence is formed by starting with the number 0, 1 and then adding the last two numbers to get the next number: 0, 1, 1, 2, 3, 5, 8, etc. Call your function using `n=10` and `n=15`. Assume the user inputs $n > 0$.
+
+```{r}
+fib <- function(n) {
+  if (n == 1) {
+    print(c(0))
+  }
+  
+  else if (n == 2) {
+    print(c(0, 1))
+  }
+  
+  else {
+    x <- c(0, 1)
+    xi <- 0
+    for (i in 3:(n + 1)) {
+      x <- append(x, (x[xi] + x[xi + 1]))
+      xi <- xi + 1
+    }
+    return(x)
+  }
+}
+
+fib(10)
+fib(15)
+```
+
+(b) Create a function named `fibNew` which has one argument `n`. Have this function generate the first $n$ Fibonacci numbers using a **while** loop instead. Call your function using `n=10` and `n=15`. Assume the user inputs $n > 0$.
+
+```{r}
+fibNew <- function(n) {
+  if (n == 1) {
+    print(c(0))
+  }
+  
+  else if (n == 2) {
+    print(c(0, 1))
+  }
+  
+  else {
+    x <- c(0, 1)
+    i <- 0
+    while (i <= (n - 2)) {
+      x <- append(x, (x[i] + x[i + 1]))
+      i <- i + 1
+    }
+    return(x)
+  }
+}
+
+fibNew(10)
+fibNew(15)
+```
+
+For the remainder of this question, use the data set `Pokemon.csv` from *Canvas*.  This data set comes from [Kaggle.com](https://www.kaggle.com/abcsds/pokemon). 
+
+(c) Subset the Pokemon dataset such that we only have Pokemon from generation 3. Name this dataset `gen3`.
+
+```{r}
+pokemon <- read.csv("Pokemon.csv")
+head(pokemon, 10)
+gen3 <- subset(pokemon, Generation == "3")
+gen3
+```
+
+(d) Create a function named `kMSE` that takes in data `data`, number of folds `k`, and the seed `seed`. The function should split the data evenly into $k$ folds, perform $k$-fold cross validation (which includes running a linear regression model, making predictions, and calculating the MSE metric), and return a vector of length `k` containing the MSEs. 
+
+```{r}
+
+```
+
+- The linear regression model should determine if speed affects the attack of a Pokemon.
+
+(e) Use the `kMSE` function on the `gen3` dataset, setting `k` equal to 5 and the seed equal to 10 when doing so. Assign the result to object `mses` and print out the result.
+
