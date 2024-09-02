@@ -1,0 +1,102 @@
+---
+title: "Discussion 5"
+author: "Jaideep Bollu"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+1) Use the built-in data set called `faithful`, see the Help file for the description of this data set.  Create a histogram for the `eruptions` variable. Adjust the axis labels and title to make the graph professional looking. (1 pt)
+
+```{r}
+help("faithful")
+hist(faithful$eruptions,  main = "Histogram of Eruptions", ylab = "Frequency", xlab = "Eruption Time in Minutes")
+```
+
+2) Create a histogram for the `waiting` column of the `faithful` data set. Use at least 4 arguments for this function that you find in the help file.  Make sure at least two of these arguments are not:  `main`, `xlab`, `ylab`, `col`, `breaks`. The other remaining arguments are not limited. (1 pt)
+
+```{r}
+hist(faithful$waiting, main = "Histogram of Waiting Times", xlab = "Waiting Time in Minutes", ylab = "Density", freq = FALSE, right = TRUE)
+```
+
+3) Create a function called `extreme.temp()`. In this function we will check if the inputted temperature is extreme.  Make this function have two arguments. Let the first argument be named `tempType`, and the second argument called `temp`. If `tempType="F"` then the `temp` is in Fahrenheit units, and if `tempType="C"` then `temp` is in Celsius units.  Return a character vector of length one called `status` which indicates if the inputted `temp` is "boiling", "freezing", or "good". You may use/call functions created last week. (2 pts)
+
+```{r}
+extreme.temp <- function(tempType, temp) {
+  if (tempType == "F") {
+    if (temp >= 212) {
+      status <- c("boiling")
+    }
+    
+    else if (temp <= 32) {
+      status <- c("freezing")
+    }
+    
+    else {
+      status <- c("good")
+    }
+  }
+  
+  else if (tempType == "C") {
+    if (temp >= 100) {
+      status <- c("boiling")
+    }
+    
+    else if (temp <= 0) {
+      status <- c("freezing")
+    }
+    
+    else {
+      status <- c("good")
+    }
+  }
+  
+  else {
+    stop("Wrong Unit")
+  }
+  
+  return(status)
+}
+
+```
+
+4) Using the `sapply()` function, check the temperatures 20C, -13C, 70C, and 150C for the function you created in Q3. (1 pt)
+
+```{r}
+temp <- c(20, -13, 70, 150)
+
+sapply(temp, function(t) extreme.temp("C", t))
+```
+
+5) Create the function which has one argument `n`.  Have this function generate the first n Fibannaci numbers using a **while** loop.  Note that the Fibanacci sequence is formed by starting with the number 0, 1 and then adding the last two numbers to get the next number: 0, 1, 1, 2, 3, 5, 8, etc.  (2 pts)
+
+```{r}
+fibbonacci_sequence <- function(n) {
+  if (n == 1) {
+    print(c(0))
+  }
+  
+  else if (n == 2) {
+    print(c(0, 1))
+  }
+  
+  else {
+    x <- c(0, 1)
+    i <- 0
+    while (i <= (n - 2)) {
+      x <- append(x, (x[i] + x[i + 1]))
+      i <- i + 1
+    }
+    return(x)
+  }
+}
+```
+
+6) Call your function from Q5 using `n=8` and `n=30`. (0.5 pts)
+
+```{r}
+fibbonacci_sequence(8)
+fibbonacci_sequence(30)
+```
