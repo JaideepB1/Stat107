@@ -1,0 +1,76 @@
+---
+title: "Discussion 6"
+author: "Jaideep Bollu"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+For this assignment, you will be using the `mtcars` dataset to answer the questions below that are related to statistics in R, regression, and classification. Functions and other topics will also be included below.
+
+1) Create a function named `statistics` that takes in a single numeric vector, representing a variable/column from the dataset, and returns a single named list containing the following:
+- `mean`: the mean of the variable
+- `median`: the median of the variable
+- `q90`: the 90th percentile of the variable
+- `n`: the number of elements in the variable (1.5 pts)
+
+```{r}
+statistics <- function(x) {
+  xe <- list(mean(x), median(x), quantile(x, probs = 0.9), n = length(x))
+  names(xe) <- c("mean", "median", "g90", "n")
+  return(xe)
+}
+```
+
+2) Use the `statistics` function created in Q1 on any two continuous variables of your choice from `mtcars`. Output those results. (1 pt)
+
+```{r}
+data("mtcars")
+statistics_mpg <- statistics(mtcars$mpg)
+statistics_hp <- statistics(mtcars$hp)
+
+statistics_mpg
+statistics_hp
+```
+
+3) With `hp` as the explanatory variable and `mpg` as the response variable, create a linear regression model and show a summary of the model fit. (1 pt)
+
+```{r}
+lrg <- lm(mpg ~ hp, data = mtcars)
+lrg
+```
+
+4) Suppose you have the following dataset with these `hp`, `mpg`, and `am` values:
+
+```{r}
+newMPG = c(26, 29, 13, 18)
+newHP = c(150, 125, 250, 160)
+newAM = c(0, 0, 1, 1)
+predData = data.frame(mpg = newMPG, hp = newHP, am = newAM)
+```
+
+Generate `mpg` predictions for the `predData` dataset using the model created in Q3 and show these predictions. Find the mean squared error. (1.5 pts)
+
+```{r}
+prediction <- predict(lrg, newdata = predData)
+mse <- mean((prediction - predData$mpg)^2)
+mse
+```
+
+5) With `hp` as the explanatory variable and `am` as the response variable, create a logistic regression model and show a summary of the model fit. (1 pt)
+
+```{r}
+log_rm <- glm(am ~ hp, data = mtcars, family = binomial)
+summary((log_rm))
+```
+
+6) Using `predData`, generate `am` classifications using the model created in Q5 and show these classifications. Find the prediction accuracy. (1.5 pts)
+
+```{r}
+pred_probability <- predict(log_rm, newdata = predData, type = "response")
+pred_pos <- ifelse(pred_probability < 0.5, 0, 1)
+predict_accuracy <- mean(pred_pos == predData$am)
+predict_accuracy
+```
