@@ -1,0 +1,49 @@
+---
+title: "Discussion 8"
+author: "Jaideep Bollu"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+search()
+```
+
+Use the `tidyverse` collection of packages for this assignment.
+
+1) (1.5 points)  Create a tibble that contains and clearly indicates the smallest, largest, and mean value of `Sepal.Length` for each species in the built in data set `iris`. 
+
+```{r}
+tibble(iris)
+tibble_iris <- iris %>% 
+  group_by(Species) %>%
+  summarize(SepalLength_Smallest = min(Sepal.Length), SepalLength_Largest = max(Sepal.Length), SepalLength_Mean = mean(Sepal.Length))
+tibble_iris
+```
+
+2) (2.5 points)  Create a new tibble called `iris2` which is a copy of the the `iris` data set, but contains a new column called "BigPetal".  Let the values of this new column be  `TRUE` if `Petal.Length` is greater than the (arithmetic) mean `Petal.Length` AND `Petal.Width` is greater than the (arithmetic) mean `Petal.Width`. Organize this tibble first by `Big.Petal`, and then by `Petal.Length`. 
+
+```{r}
+iris2 <- iris %>%
+  mutate(Big.Petal = (Petal.Length > mean(Petal.Length)) & (Petal.Width > mean(Petal.Width))) %>%
+  arrange(Big.Petal, Petal.Length)
+iris2
+```
+
+3) (2.5 points) Use the `iris2` data set to create a new tibble.  Have this new tibble contain how many observations have `BigPetal=TRUE`, the (arithmetic) mean `Petal.Length`, min `Petal.Length`, and max `Petal.Length` by `Species`, and no other information.
+
+```{r}
+iris2_new <- iris2 %>%
+  filter(Big.Petal == TRUE) %>% 
+  group_by(Species) %>%
+  summarize(PetalLength_Smallest = min(Petal.Length), PetalLength_Largest = max(Petal.Length), PetalLength_Mean = mean(Petal.Length), BigPetalTrue_Count = n())
+iris2_new
+```
+
+4) (1 point) Create a two-way frequency table for `BigPetal` and `Species`. 
+
+```{r}
+table(iris2$Big.Petal, iris2$Species)
+```
+
