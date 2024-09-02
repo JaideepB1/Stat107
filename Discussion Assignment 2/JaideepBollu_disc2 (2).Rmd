@@ -1,0 +1,80 @@
+---
+title: "Discussion 2"
+author: "Jaideep Bollu"
+output:
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Suppose you have collected answers to the following survey questions from five respondents:
+
+- What is your favorite nearby restaurant?
+- What is your favorite subject?
+- What is your favorite number?
+- What year are you?
+- Are you from California?
+
+Here are the following results:
+
+- Restaurant: Sushi Times, 7 Leaves, Manna Grill, 7 Leaves, Denny's
+- Subject: English, Math, Math, Biology, Spanish
+- Number: 7, 13, 0, 8, 5
+- Year: First, Fourth, Third, Third, Second
+- California?: Yes, Yes, No, Yes, No
+
+Use the following responses to answer the questions below:
+
+1) Create a logical vector named `cali` that consists of responses to the question about being from California. Let "yes" responses be represented as `TRUE`. Print out the result. (1 pt)
+```{r}
+cali <- c(TRUE, TRUE, FALSE, TRUE, FALSE)
+print(cali)
+```
+
+2) Use the `as.double()` function to transform `cali` into a double vector called `dbl_cali`. Print out the result.  (1 pt)
+```{r}
+dbl_cali <- as.double(cali)
+print(dbl_cali)
+```
+
+3) Comment on what you noticed about this conversion in the previous prompt. (1 pt)
+
+I noticed that the TRUE values were converted into values of 1 when the vector was changed from a logical vector to a double vector and FALSE values were likewise converted to 0.
+
+4) Create an ordered factor named `year` that stores the responses to the year question with the following hierarchy: first $\rightarrow$ second $\rightarrow$ third $\rightarrow$ fourth. Print out the result. (1 pt)
+```{r}
+yearVal <- c("First", "Fourth", "Third", "Third", "Second")
+year <- factor(yearVal, ordered = TRUE, levels = c("First", "Second", "Third", "Fourth"))
+print(year)
+```
+
+5) For the rest of the survey questions, please create appropriate vectors named `rest`, `subject`, and `number` respectively. (1 pt)
+```{r}
+rest <- c("Sushi Times", "7 Leaves", "Manna Grill", "7 Leaves", "Denny's")
+subject <- c("English", "Math", "Math", "Biology", "Spanish")
+number <- c("7", "13", "0", "8", "5")
+```
+
+6) Construct a data frame named `survey` that includes the `rest`, `subject`, `number`, `cali`, and `year` vectors. Print out the data frame. (1 pt)
+```{r}
+survey <- data.frame(rest, subject, number, cali, year)
+print(survey)
+```
+
+7) Provide two ways for accessing the third response regarding `rest` from the `survey` data frame. (1.5 pts)
+```{r}
+survey[3, "rest"]
+
+survey$rest[3]
+```
+
+8) **Extra Credit**: In one line of code, sort the data frame based on the `number` column from least to greatest. (0.5 pts)
+```{r}
+survey[order(as.numeric(survey$number)), ]
+```
+
+
+
+
