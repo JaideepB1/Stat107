@@ -43,6 +43,3 @@ m
 
 Two types of operators would be logical operators and rational operators. Logical operators are used to describe AND, OR, and NOT symbols which are used to connect multiple expressions with AND symbols outputing true only if all expressions are true and OR symbols outputing true even if only one expression is true. the NOT symbol is used for negation and it will give the opposite of the expressions usual output. Rational operators compare two different values with examples being less than, less than or equal to, greater than, greater than or equal to, not equal to, and equal to and they output true or false based on if the comparison is valid or not with an example being 2 < 5 outputing true because the expression holds true.
 
-7) Please fill out the following survey: https://forms.gle/bfSPuNcT5S41JLKYA (1.5 pts)
-
-Completed
